@@ -800,7 +800,7 @@ async function recoverPrepare() {
   const pol = await q.getPolicy(vault);
   if (toHex(v.state.keyId) === k.keystore.key_id) return finishRecovery(typed);
   if (!pol?.enabled) throw new Error('This vault has no guardian, so only its key file can open it. Use "I have my key file" instead.');
-  if (!payer) throw new Error('Connect a Solana wallet: it pays about 0.154 SOL of refundable rent for the new key.');
+  if (!payer) throw new Error('Connect a Solana wallet: it puts down a refundable deposit of about 0.154 SOL to store the new key on-chain.');
   state.recovery = { vault: typed };
   persist();
   const steps = h('ol', { 'data-testid': 'recover-progress' });
@@ -1020,7 +1020,7 @@ function devnetHelp() {
       { class: 'steps compact' },
       h('li', {}, `In Phantom or Solflare, switch the network to ${c[0]!.toUpperCase() + c.slice(1)} (Settings → Developer settings).`),
       h('li', {}, 'Copy your wallet address, then get free test SOL at ', h('a', { href: 'https://faucet.solana.com', target: '_blank', rel: 'noopener noreferrer' }, 'faucet.solana.com'), '.'),
-      h('li', {}, 'Come back and connect. Creating a vault uses about 0.16 test SOL.'),
+      h('li', {}, 'Come back and connect. Creating a vault puts down about 0.16 test SOL as a refundable deposit.'),
     ),
     h('p', { class: 'muted small' }, 'Test SOL has no value. Never send real SOL to a devnet address.'),
   );
@@ -1245,7 +1245,7 @@ function recoverView() {
       stepHeader('recover', 'Set up the new key on your vault', 'This puts the new key next to the vault. Nothing changes until your guardian approves the switch.'),
       h('div', { class: 'done-line' }, icon('check'), h('span', {}, 'New key ready and backed up'), h('span', { class: 'mono sr-only', 'data-testid': 'active-key-id' }, k.keystore.key_id)),
       field('Vault address', input('recover-vault', { value: r.vault ?? '', placeholder: 'The address you deposit to', spellcheck: 'false', autocomplete: 'off' }), 'Find it in an old deposit, a note you kept, or your guardian page link.'),
-      payer ? row('Paid by', payer.label, 'payer') : h('div', { class: 'stack' }, h('p', { class: 'muted small' }, 'A Solana wallet pays about 0.154 SOL of rent for the new key. You get it back when that key is replaced one day.'), walletButtons()),
+      payer ? row('Paid by', payer.label, 'payer') : h('div', { class: 'stack' }, h('p', { class: 'muted small' }, 'A Solana wallet puts down about 0.154 SOL as a deposit to store the new key on-chain. It is not a fee: it goes back to that wallet when the key is replaced.'), walletButtons()),
       button('recover-prepare', 'Set up the new key', () => run('Setting up the new key', recoverPrepare), !payer),
       h('div', { id: 'progress', class: 'progress-list' }),
       button('recover-cancel', 'Cancel recovery', () => ((state.recovery = null), persist(), render()), false, 'ghost'),
@@ -1300,7 +1300,7 @@ function walletStepView() {
   return h(
     'div',
     { class: 'onb' },
-    stepHeader('wallet', 'Connect a Solana wallet', 'It pays about 0.157 SOL of rent to create the vault and funds your deposits. It never gets control of the vault.'),
+    stepHeader('wallet', 'Connect a Solana wallet', 'It puts down about 0.157 SOL as a refundable deposit (not a fee) to store your vault on-chain, and funds your deposits. It never gets control of the vault.'),
     h('div', { class: 'done-line' }, icon('check'), h('span', {}, 'Vault key ready and backed up'), h('span', { class: 'mono sr-only', 'data-testid': 'active-key-id' }, k.keystore.key_id)),
     state.settings.programId ? walletButtons() : networkGate(),
     h('p', { class: 'muted center' }, 'Already have a vault with this key?'),
@@ -1313,7 +1313,7 @@ function vaultStepView() {
   return h(
     'div',
     { class: 'onb' },
-    stepHeader('vault', payer ? 'Create your vault' : 'Open your vault', payer ? 'One vault per key and name. Creating it takes 7 quick transactions, all paid by your Solana wallet.' : 'Enter the name you gave the vault when you created it.'),
+    stepHeader('vault', payer ? 'Create your vault' : 'Open your vault', payer ? 'One vault per key and name. Creating it takes 7 quick transactions and a refundable deposit of about 0.157 SOL, paid by your Solana wallet.' : 'Enter the name you gave the vault when you created it.'),
     !state.settings.programId && networkGate(),
     payer && row('Paid by', payer.label, 'payer'),
     field('Vault name', input('vault-label', { value: 'default', spellcheck: 'false' }), 'Only used to find the vault again. "default" is fine.'),
@@ -1526,7 +1526,7 @@ function guardianSection() {
       'Turn on guardian protection',
       row('Guardian key', h('span', { class: 'mono' }, state.guardianPublic.keyId), 'guardian-key-id'),
       h('div', { class: 'two' }, field('Daily limit (SOL)', input('guardian-limit', { value: '1', inputmode: 'decimal' })), field('Period (hours)', input('guardian-period', { value: '24', inputmode: 'numeric' }))),
-      h('p', { class: 'muted small' }, 'Your Solana wallet pays about 0.16 SOL of refundable rent for the guardian key. Your vault key signs.'),
+      h('p', { class: 'muted small' }, 'Your Solana wallet puts down about 0.16 SOL as a refundable deposit (not a fee) to store the guardian key on-chain. Your vault key signs.'),
       !payer && h('div', {}, h('p', { class: 'muted small' }, 'Connect a Solana wallet to continue:'), walletButtons()),
       field('Vault key password', input('guardian-password', { type: 'password', autocomplete: 'off' })),
       button('enable-guardian', 'Turn on guardian protection', () => run('Turning on guardian', enableGuardian), !payer),

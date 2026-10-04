@@ -11,11 +11,13 @@ import type { ChainRpc, QShield, VaultInfo } from './client.js';
 import * as ix from './instructions.js';
 import { keyId } from './qsp1.js';
 import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, associatedTokenAddress, parseMint, parseTokenAccount, type TokenAccountInfo } from './token.js';
-import { LocalKeypair, buildLegacyTransaction, localSigner, setComputeUnitLimit, type TxSigner } from './transaction.js';
+import { LocalKeypair, buildLegacyTransaction, localSigner, setComputeUnitLimit, withComputeBudget, type TxSigner } from './transaction.js';
 
 export const KEY_CHUNK = 900;
 const EXPAND_PER_TX = 10;
 const EXPAND_TOTAL = 20;
+/** Priority fee on every transaction: 1000 µlamports/CU is ≤ 0.000001 SOL at 1M CU. */
+const PRIORITY_MICROLAMPORTS = 1000n;
 
 /** System program `CreateAccount`. */
 export function systemCreateAccount(from: Uint8Array, to: Uint8Array, lamports: bigint, space: number, owner: Uint8Array): ix.Instruction {
@@ -49,7 +51,7 @@ export class VaultOperations {
 
   private async send(payer: TxSigner, ixs: ix.Instruction[], extra: TxSigner[] = []): Promise<string> {
     const bh = await this.rpc.getLatestBlockhash();
-    return this.rpc.sendAndConfirm(await buildLegacyTransaction(payer, ixs, bh, extra));
+    return this.rpc.sendAndConfirm(await buildLegacyTransaction(payer, withComputeBudget(ixs, PRIORITY_MICROLAMPORTS), bh, extra));
   }
 
   /**

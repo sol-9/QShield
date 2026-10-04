@@ -20,6 +20,27 @@ export function setComputeUnitLimit(units: number): Instruction {
   return { programId: COMPUTE_BUDGET_PROGRAM_ID, keys: [], data: d };
 }
 
+/** `ComputeBudgetInstruction::SetComputeUnitPrice` (micro-lamports per compute unit). */
+export function setComputeUnitPrice(microLamports: bigint): Instruction {
+  const d = new Uint8Array(9);
+  d[0] = 3;
+  new DataView(d.buffer).setBigUint64(1, microLamports, true);
+  return { programId: COMPUTE_BUDGET_PROGRAM_ID, keys: [], data: d };
+}
+
+/**
+ * Prepends a compute-unit price, and a limit if none is set. Wallets such as
+ * Phantom add their own compute-budget instructions to transactions that have
+ * none, which changes the message; with both present they leave it alone.
+ */
+export function withComputeBudget(instructions: Instruction[], microLamports: bigint, defaultLimit = 200_000): Instruction[] {
+  const has = (tag: number) => instructions.some((ix) => equal(ix.programId, COMPUTE_BUDGET_PROGRAM_ID) && ix.data[0] === tag);
+  const pre: Instruction[] = [];
+  if (!has(3)) pre.push(setComputeUnitPrice(microLamports));
+  if (!has(2)) pre.push(setComputeUnitLimit(defaultLimit));
+  return [...pre, ...instructions];
+}
+
 function shortvec(n: number): Uint8Array {
   const out: number[] = [];
   let v = n;
@@ -152,12 +173,47 @@ export async function buildLegacyTransaction(payer: TxSigner, instructions: Inst
   for (const w of wallets) {
     const signed = await w.signTransaction!(tx);
     // The wallet must not change the message: compare everything after the signatures.
-    if (!equal(signed.subarray(signed.length - msg.bytes.length), msg.bytes) || signed.length !== tx.length) {
-      throw new Error('wallet modified the transaction');
+    if (signed.length === tx.length && equal(signed.subarray(signed.length - msg.bytes.length), msg.bytes)) {
+      tx = signed;
+      continue;
     }
-    tx = signed;
+    // A wallet that is the only signer may rewrite its own transaction (e.g.
+    // add guard instructions): accept it if it still pays and signed it.
+    // With other signers, a changed message would void their signatures.
+    if (msg.signers.length === 1 && wallets.length === 1 && soleSignerIntact(signed, payer.publicKey)) return signed;
+    throw new Error('the wallet changed the transaction after it was co-signed; disable any transaction "guard" or priority-fee override in the wallet and retry');
   }
   return tx;
+}
+
+function readShortvec(b: Uint8Array, at: number): [number, number] {
+  let n = 0;
+  for (let i = 0; i < 3; i++) {
+    const x = b[at + i];
+    if (x === undefined) throw new Error('truncated');
+    n |= (x & 0x7f) << (7 * i);
+    if (!(x & 0x80)) return [n, at + i + 1];
+  }
+  throw new Error('bad shortvec');
+}
+
+/** One signature, from `payer` (the first account key), valid over the message. */
+function soleSignerIntact(tx: Uint8Array, payer: Uint8Array): boolean {
+  try {
+    if (tx.length > PACKET_DATA_SIZE) return false;
+    const [n, at] = readShortvec(tx, 0);
+    if (n !== 1) return false;
+    const sig = tx.subarray(at, at + 64);
+    const message = tx.subarray(at + 64);
+    let p = message[0]! & 0x80 ? 1 : 0; // versioned message prefix
+    if (message[p] !== 1) return false; // exactly one required signature
+    p += 3;
+    const [keys, k0] = readShortvec(message, p);
+    if (keys < 1 || !equal(message.subarray(k0, k0 + 32), payer)) return false;
+    return ed25519.verify(sig, message, payer);
+  } catch {
+    return false;
+  }
 }
 
 /** First signature of a serialized transaction (its id), base58. */
