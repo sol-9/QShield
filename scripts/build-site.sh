@@ -6,7 +6,7 @@
 #   RELAYER_URL=https://qshield-relayer-devnet.fly.dev scripts/build-site.sh
 #
 # Reads deploy/devnet.json (written by scripts/devnet-deploy.sh).
-# Optional: RPC_URL (default: public devnet RPC), REPO_URL.
+# Optional: RPC_URL (default: public devnet RPC), REPO_URL (footer source link; omitted when unset).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,7 +14,7 @@ OUT="$ROOT/site"
 DEPLOY="$ROOT/deploy/devnet.json"
 : "${RELAYER_URL:?set RELAYER_URL to the public relayer, e.g. https://qshield-relayer-devnet.fly.dev}"
 RPC_URL="${RPC_URL:-https://api.devnet.solana.com}"
-REPO_URL="${REPO_URL:-https://github.com/kresmion/qshield}"
+REPO_URL="${REPO_URL:-}"
 [ -f "$DEPLOY" ] || { echo "missing $DEPLOY: run scripts/devnet-deploy.sh first"; exit 1; }
 field() { python3 -c "import json,sys; print(json.load(open(sys.argv[1]))[sys.argv[2]])" "$DEPLOY" "$1"; }
 PROGRAM="$(field program_id)"
@@ -38,6 +38,8 @@ python3 - "$ROOT/apps/landing" "$OUT" "$PROGRAM" "$AUTHORITY" "$REPO_URL" <<'EOF
 import sys, pathlib
 src, out, program, authority, repo = sys.argv[1:]
 html = pathlib.Path(src, 'index.html').read_text()
+if not repo:
+    html = '\n'.join(l for l in html.split('\n') if '{{REPO_URL}}' not in l)
 for k, v in {'{{PROGRAM_ID}}': program, '{{UPGRADE_AUTHORITY}}': authority, '{{REPO_URL}}': repo, '{{CLUSTER}}': 'devnet'}.items():
     html = html.replace(k, v)
 assert '{{' not in html, 'unfilled placeholder'
@@ -69,4 +71,4 @@ cat > "$OUT/_headers" <<EOF
 EOF
 
 echo
-echo "Site ready in $OUT. Deploy with: npx wrangler pages deploy site --project-name qshield"
+echo "Site ready in $OUT. Deploy with: npx wrangler deploy"

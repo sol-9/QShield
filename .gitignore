@@ -13,3 +13,7 @@ deploy-keys/
 .env.*
 site/
 .wrangler/
+
+.dev.vars*
+!.dev.vars.example
+!.env.example

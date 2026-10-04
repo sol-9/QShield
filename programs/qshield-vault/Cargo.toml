@@ -4,7 +4,6 @@ description = "QShield vault: Solana program whose withdrawals are authorized by
 version = "0.3.0"
 edition.workspace = true
 license.workspace = true
-repository.workspace = true
 rust-version.workspace = true
 publish = false
 

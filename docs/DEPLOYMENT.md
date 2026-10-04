@@ -9,7 +9,7 @@ not deploy vaults holding meaningful funds until every item in §4 is done.
 |-------------|--------|
 | LiteSVM (tests) | used by CI |
 | Local `solana-test-validator` (Agave 4.3.0) | tested (`scripts/bench-validator.sh`) |
-| Devnet | not yet deployed (blocked on verifying devnet feature status; tracked as an issue) |
+| Devnet | beta: program `3X4xqLweQD692RDR2dpHA52bsWici14f8T9qNZYPvhi1`, see §6 |
 | Mainnet-beta | **not permitted** (see §4) |
 
 ## 2. Building
@@ -105,8 +105,8 @@ active (checked 2026-10-04), so sends are single-transaction there too.
 | Piece | Where | How |
 |---|---|---|
 | Program | devnet | `scripts/devnet-deploy.sh` (build with `cluster-devnet`, deploy or upgrade, fund the relayer, write `deploy/devnet.json`) |
-| Relayer | Fly.io, one machine | `fly.toml` + `deploy/relayer/Dockerfile`; fee-payer key via `fly secrets set QSHIELD_RELAYER_KEYPAIR_JSON=…` |
-| Wallet + landing | Cloudflare Pages | `RELAYER_URL=… scripts/build-site.sh` → `site/` (wallet at `/app/` with pinned settings, landing at `/`, `_headers` with CSP and framing rules); `npx wrangler pages deploy site --project-name qshield` |
+| Relayer | Fly.io, one machine, https://qshield-relayer-devnet.fly.dev | `fly.toml` + `deploy/relayer/Dockerfile`; fee-payer key via `fly secrets set QSHIELD_RELAYER_KEYPAIR_JSON=…` |
+| Wallet + landing | Cloudflare Worker (static assets) | `RELAYER_URL=… scripts/build-site.sh` → `site/` (wallet at `/app/` with pinned settings, landing at `/`, `_headers` with CSP and framing rules); `npx wrangler deploy` (config: `wrangler.jsonc`) |
 
 Keys live in `deploy-keys/devnet/` (git-ignored): `authority.json` is the
 upgrade authority and pays for deploys; `program.json` fixes the program id;

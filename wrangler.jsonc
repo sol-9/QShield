@@ -1,0 +1,9 @@
+// Cloudflare Worker serving the static site built by scripts/build-site.sh.
+//   RELAYER_URL=https://qshield-relayer-devnet.fly.dev scripts/build-site.sh
+//   npx wrangler deploy
+{
+  "name": "qshield",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+  "assets": { "directory": "site" }
+}
