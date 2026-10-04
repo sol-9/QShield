@@ -1,0 +1,10 @@
+{
+  "cluster": "devnet",
+  "program_id": "3X4xqLweQD692RDR2dpHA52bsWici14f8T9qNZYPvhi1",
+  "upgrade_authority": "A6JKGNVJ8T8TmLMqkuGeCgVnfGTaori1aoAz8e7KvDug",
+  "relayer_fee_payer": "F33apaQghaqrCfbGjgDSwzWjRC9pYN1a2HcnBPGAQb2C",
+  "binary_sha256": "da1d8a60124e4c832160327fcdbd6a82efbadc56a2fd8b2123fa5245ae26458e",
+  "source_commit": "95416ca7c3effc361c8b92fbb4c98d7d518d37db",
+  "agave": "cargo-build-sbf 4.3.0",
+  "deployed_at": "2026-10-04T13:55:54Z"
+}

@@ -13,7 +13,7 @@ primary_region = "cdg"
 [env]
   QSHIELD_CLUSTER = "devnet"
   QSHIELD_RPC_URL = "https://api.devnet.solana.com"
-  QSHIELD_PROGRAM_ID = "REPLACE_WITH_DEVNET_PROGRAM_ID"
+  QSHIELD_PROGRAM_ID = "3X4xqLweQD692RDR2dpHA52bsWici14f8T9qNZYPvhi1"
   QSHIELD_RELAYER_MIN_FEE = "0"
 
 [http_service]

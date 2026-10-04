@@ -43,11 +43,20 @@ export class JsonRpc implements ChainRpc {
   constructor(readonly url: string) {}
 
   private async call(method: string, params: unknown[]): Promise<any> {
-    const res = await fetch(this.url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
-    });
+    // Public RPC endpoints rate-limit (429) and occasionally fail (5xx): retry
+    // with exponential backoff (about 30 s in total). Resending is safe, also
+    // for sendTransaction: a signed transaction cannot execute twice.
+    let res: Response;
+    for (let attempt = 1, delay = 500; ; attempt++, delay = Math.min(delay * 2, 8000)) {
+      res = await fetch(this.url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+      });
+      if ((res.status !== 429 && res.status < 500) || attempt >= 7) break;
+      await new Promise((r) => setTimeout(r, delay));
+    }
+    if (res.status === 429) throw new Error(`rpc ${method}: the RPC endpoint is rate-limiting requests; try again in a minute`);
     const body = (await res.json()) as { result?: unknown; error?: { message?: string } };
     if (body.error) throw new Error(`rpc ${method}: ${body.error.message ?? 'error'}`);
     return body.result;

@@ -66,6 +66,9 @@ mod http {
 
     use super::*;
 
+    /// Attempts per RPC call when the endpoint answers 429 or 5xx (about 30 s).
+    const RPC_ATTEMPTS: u32 = 7;
+
     /// Solana JSON-RPC client (HTTP), commitment `confirmed`.
     pub struct JsonRpc {
         url: String,
@@ -83,9 +86,25 @@ mod http {
 
         fn call(&self, method: &str, params: Value) -> Result<Value, Error> {
             let body = json!({"jsonrpc": "2.0", "id": 1, "method": method, "params": params});
-            let mut resp = ureq::post(&self.url)
-                .send_json(&body)
-                .map_err(|e| Error::Rpc(format!("{method}: {e}")))?;
+            // Public RPC endpoints rate-limit (429) and occasionally fail (5xx):
+            // retry with exponential backoff. Resending is safe, also for
+            // sendTransaction: the same signed transaction has the same
+            // signature and cannot execute twice.
+            let mut delay = Duration::from_millis(500);
+            let mut attempt = 0;
+            let mut resp = loop {
+                attempt += 1;
+                match ureq::post(&self.url).send_json(&body) {
+                    Ok(r) => break r,
+                    Err(ureq::Error::StatusCode(code))
+                        if (code == 429 || code >= 500) && attempt < RPC_ATTEMPTS =>
+                    {
+                        std::thread::sleep(delay);
+                        delay = (delay * 2).min(Duration::from_secs(8));
+                    }
+                    Err(e) => return Err(Error::Rpc(format!("{method}: {e}"))),
+                }
+            };
             let v: Value = resp
                 .body_mut()
                 .read_json()
