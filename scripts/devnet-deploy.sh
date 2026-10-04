@@ -4,9 +4,13 @@
 #   scripts/devnet-deploy.sh            build, check balances, deploy
 #   AIRDROP=1 scripts/devnet-deploy.sh  also try the devnet faucet for the authority
 #
-# Keys live in deploy-keys/devnet/ (git-ignored; back them up):
+# Upgrading an existing program (keys kept where they are):
+#   AUTHORITY_KEYPAIR=~/.config/solana/qshield-devnet/deployer.json \
+#   PROGRAM_ID=3X4xqLweQD692RDR2dpHA52bsWici14f8T9qNZYPvhi1 scripts/devnet-deploy.sh
+#
+# Keys default to deploy-keys/devnet/ (git-ignored; back them up):
 #   authority.json  pays for the deploy and is the program's UPGRADE AUTHORITY
-#   program.json    the program address (needed only for the first deploy)
+#   program.json    the program address (first deploy only; unused with PROGRAM_ID)
 #   relayer.json    the relayer's fee payer (goes to Fly as a secret)
 # The public result is written to deploy/devnet.json.
 set -euo pipefail
@@ -20,16 +24,27 @@ SO="$ROOT/target/devnet/qshield_vault.so"
 
 mkdir -p "$KEYS"
 chmod 700 "$ROOT/deploy-keys" "$KEYS"
-for k in authority program relayer; do
-  if [ ! -f "$KEYS/$k.json" ]; then
-    solana-keygen new --no-bip39-passphrase --silent -o "$KEYS/$k.json"
-    chmod 600 "$KEYS/$k.json"
-    echo "created $KEYS/$k.json"
+AUTH_KEY="${AUTHORITY_KEYPAIR:-$KEYS/authority.json}"
+RELAYER_KEY="${RELAYER_KEYPAIR:-$KEYS/relayer.json}"
+new_key() {
+  if [ ! -f "$1" ]; then
+    solana-keygen new --no-bip39-passphrase --silent -o "$1"
+    chmod 600 "$1"
+    echo "created $1"
   fi
-done
-AUTHORITY="$(solana-keygen pubkey "$KEYS/authority.json")"
-PROGRAM="$(solana-keygen pubkey "$KEYS/program.json")"
-RELAYER="$(solana-keygen pubkey "$KEYS/relayer.json")"
+}
+new_key "$AUTH_KEY"
+new_key "$RELAYER_KEY"
+if [ -n "${PROGRAM_ID:-}" ]; then
+  PROGRAM="$PROGRAM_ID"
+  PROGRAM_ARG="$PROGRAM_ID"
+else
+  new_key "$KEYS/program.json"
+  PROGRAM="$(solana-keygen pubkey "$KEYS/program.json")"
+  PROGRAM_ARG="$KEYS/program.json"
+fi
+AUTHORITY="$(solana-keygen pubkey "$AUTH_KEY")"
+RELAYER="$(solana-keygen pubkey "$RELAYER_KEY")"
 echo "upgrade authority $AUTHORITY"
 echo "program id        $PROGRAM"
 echo "relayer payer     $RELAYER"
@@ -37,9 +52,9 @@ echo "relayer payer     $RELAYER"
 [ "$(solana genesis-hash -u "$URL")" = "EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG" ] || { echo "RPC $URL is not devnet"; exit 1; }
 
 echo "== build (cluster-devnet, SBPF v3)"
-cargo build-sbf --arch v3 --features cluster-devnet --manifest-path "$ROOT/programs/qshield-vault/Cargo.toml" -- --locked
-mkdir -p "$(dirname "$SO")"
-cp "$ROOT/target/deploy/qshield_vault.so" "$SO"
+# Separate output directory: target/deploy keeps the localnet build the tests use.
+cargo build-sbf --arch v3 --features cluster-devnet --manifest-path "$ROOT/programs/qshield-vault/Cargo.toml" \
+  --sbf-out-dir "$(dirname "$SO")" -- --locked
 SHA="$(sha256sum "$SO" | cut -d' ' -f1)"
 echo "binary sha256 $SHA"
 
@@ -56,18 +71,36 @@ if [ "$HAVE" -lt "$NEED" ]; then
   exit 2
 fi
 
+# An upgrade needs room for the new binary: extend the program data first.
+SIZE="$(stat -c %s "$SO")"
+CURRENT="$(solana program show -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" 2>/dev/null | awk '/Data Length/ {print $3}' || true)"
+if [ -n "$CURRENT" ] && [ "$SIZE" -gt "$CURRENT" ]; then
+  echo "== extend program data by $(( SIZE - CURRENT )) bytes"
+  solana program extend -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" "$(( SIZE - CURRENT ))"
+fi
+
 echo "== deploy"
 solana program deploy -u "$URL" \
-  --keypair "$KEYS/authority.json" \
-  --upgrade-authority "$KEYS/authority.json" \
-  --program-id "$KEYS/program.json" \
+  --keypair "$AUTH_KEY" \
+  --upgrade-authority "$AUTH_KEY" \
+  --program-id "$PROGRAM_ARG" \
   --max-sign-attempts 60 \
+  ${USE_TPU:+--use-tpu-client} \
   "$SO"
-solana program show -u "$URL" "$PROGRAM"
+solana program show -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM"
+echo "== verify: on-chain bytes equal the build"
+solana program dump -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" "$ROOT/target/devnet/onchain.so" >/dev/null
+python3 - "$SO" "$ROOT/target/devnet/onchain.so" <<'PY'
+import sys
+built, chain = (open(p, 'rb').read() for p in sys.argv[1:])
+# Program data is zero-padded to its allocated size.
+assert chain[:len(built)] == built and not chain[len(built):].strip(b'\0'), 'on-chain program differs from the build'
+print('on-chain program matches the build byte for byte')
+PY
 
 if [ "$(sol "$RELAYER")" -lt 500000000 ]; then
   echo "== fund relayer with $RELAYER_FUND_SOL SOL"
-  solana transfer -u "$URL" --keypair "$KEYS/authority.json" --allow-unfunded-recipient "$RELAYER" "$RELAYER_FUND_SOL"
+  solana transfer -u "$URL" --keypair "$AUTH_KEY" --allow-unfunded-recipient "$RELAYER" "$RELAYER_FUND_SOL"
 fi
 
 cat > "$ROOT/deploy/devnet.json" <<EOF
@@ -85,4 +118,4 @@ EOF
 sed -i "s/^  QSHIELD_PROGRAM_ID = .*/  QSHIELD_PROGRAM_ID = \"$PROGRAM\"/" "$ROOT/fly.toml"
 echo
 echo "Done. Recorded in deploy/devnet.json; fly.toml now points at $PROGRAM."
-echo "Back up deploy-keys/devnet/ somewhere safe: authority.json controls upgrades."
+echo "Back up $AUTH_KEY somewhere safe: it controls upgrades."
