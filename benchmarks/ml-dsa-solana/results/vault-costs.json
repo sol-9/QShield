@@ -1,0 +1,25 @@
+{
+  "measurements": {
+    "create_key_tx (system alloc + create_key)": 1129,
+    "create_sig_buffer": 4725,
+    "deposit_sol": 2937,
+    "expand_key_polys_0_9": 779927,
+    "expand_key_polys_10_19": 649928,
+    "finalize_key (sha256 key id + tr)": 129510,
+    "initialize_vault": 8443,
+    "pause": 829664,
+    "rotate_key": 828702,
+    "tx_bytes_withdraw_sol_inline_v1": 3010,
+    "tx_bytes_withdraw_sol_with_buffer_legacy": 637,
+    "unpause": 828046,
+    "withdraw_sol_inline_v1": 830035,
+    "withdraw_sol_with_buffer_legacy": 830619,
+    "write_key_total (2 legacy txs)": 2200,
+    "write_sig_buffer_total (3 legacy txs)": 3341
+  },
+  "rent_exempt_lamports": {
+    "key_account_21976B": 153843840,
+    "sig_buffer_2508B": 18346560,
+    "vault_256B": 2672640
+  }
+}

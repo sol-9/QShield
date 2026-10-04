@@ -1,0 +1,195 @@
+{
+  "generated_by": "benchmarks/ml-dsa-solana/harness",
+  "runtime": "LiteSVM 0.17.0 (Agave 4.3 SVM crates)",
+  "feature_set": "LiteSVM::mainnet_feature_set() (snapshot sourced from mainnet-beta on 2026-09-27)",
+  "max_tx_compute_units": 1400000,
+  "program_so_bytes": 58488,
+  "keys_sampled": 200,
+  "message_len": 210,
+  "context": "QSHIELD-QSP1",
+  "noop_tx_cu": 225,
+  "compact_cu_uncapped": {
+    "n": 20,
+    "min": 2295140,
+    "median": 2296339,
+    "mean": 2296335.0,
+    "p99": 2297563,
+    "max": 2297563
+  },
+  "compact_fits_under_cap": false,
+  "compact_prepared_cu_uncapped": {
+    "n": 20,
+    "min": 2167645,
+    "median": 2168844,
+    "mean": 2168840.0,
+    "p99": 2170068,
+    "max": 2170068
+  },
+  "compact_prepared_fits_under_cap": false,
+  "expanded_buffer_legacy_cu": {
+    "n": 200,
+    "min": 825154,
+    "median": 828104,
+    "mean": 828071.0,
+    "p99": 830261,
+    "max": 830543
+  },
+  "expanded_inline_v1_cu": {
+    "n": 200,
+    "min": 824692,
+    "median": 827642,
+    "mean": 827609.0,
+    "p99": 829799,
+    "max": 830081
+  },
+  "heap_peak_bytes": 7424,
+  "expanded_key_account_bytes": 20544,
+  "rent_exempt_lamports": {
+    "expanded_key_20544B": 143877120,
+    "public_key_1312B": 10022400,
+    "signature_buffer_2420B": 17734080,
+    "zero_data_account": 890880
+  },
+  "negative_cases": {
+    "all_ff_signature": {
+      "ok": false,
+      "cu": 48666,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:MalformedHint"
+      ]
+    },
+    "malformed_hint": {
+      "ok": false,
+      "cu": 49106,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:MalformedHint"
+      ]
+    },
+    "modified_c_tilde": {
+      "ok": false,
+      "cu": 827268,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ChallengeMismatch"
+      ]
+    },
+    "modified_message": {
+      "ok": false,
+      "cu": 828141,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ChallengeMismatch"
+      ]
+    },
+    "modified_z": {
+      "ok": false,
+      "cu": 827205,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ChallengeMismatch"
+      ]
+    },
+    "oversized_signature_inline_v1": {
+      "ok": false,
+      "cu": 827679,
+      "heap_peak": 7304,
+      "tx_size": 2875,
+      "err": "InstructionError(0, InvalidArgument)"
+    },
+    "random_signature": {
+      "ok": false,
+      "cu": 48666,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:MalformedHint"
+      ]
+    },
+    "signature_from_other_key": {
+      "ok": false,
+      "cu": 826992,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ChallengeMismatch"
+      ]
+    },
+    "truncated_public_key_compact": {
+      "ok": false,
+      "cu": 976,
+      "heap_peak": null,
+      "tx_size": 500,
+      "err": "InstructionError(1, AccountDataTooSmall)"
+    },
+    "truncated_signature_account": {
+      "ok": false,
+      "cu": 1001,
+      "heap_peak": null,
+      "tx_size": 500,
+      "err": "InstructionError(1, AccountDataTooSmall)"
+    },
+    "wrong_public_key": {
+      "ok": false,
+      "cu": 828718,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)"
+    },
+    "zero_public_key_compact": {
+      "ok": false,
+      "cu": 2293096,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ChallengeMismatch"
+      ]
+    },
+    "zero_signature": {
+      "ok": false,
+      "cu": 64571,
+      "heap_peak": 7424,
+      "tx_size": 500,
+      "err": "InstructionError(1, InvalidArgument)",
+      "logs": [
+        "Program log: verify=err:ZNormTooLarge"
+      ]
+    }
+  },
+  "profile_cu": {
+    "decode_t1_row": 10763,
+    "inv_ntt": 41978,
+    "measurement_overhead": 101,
+    "ntt": 31350,
+    "pointwise_mul_acc": 3841,
+    "rej_ntt_poly": 74046,
+    "sample_in_ball": 24599,
+    "tr_shake256_1312B": 127526
+  },
+  "transport": {
+    "legacy_packet_limit": 1232,
+    "v1_tx_limit": 4096,
+    "legacy_tx_pk_and_sig_inline_bytes": 4166,
+    "legacy_tx_sig_inline_bytes": 2887,
+    "legacy_tx_verify_from_accounts_bytes": 500,
+    "v1_tx_sig_inline_bytes": 2874,
+    "v1_tx_pk_and_sig_inline_bytes": 4153,
+    "legacy_max_chunk_payload": 1024,
+    "legacy_upload_txs_for_signature": 3,
+    "legacy_upload_txs_for_public_key": 2
+  }
+}

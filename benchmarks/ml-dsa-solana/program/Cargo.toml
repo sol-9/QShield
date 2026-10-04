@@ -1,0 +1,28 @@
+[package]
+name = "mldsa-bench-program"
+description = "Benchmark-only Solana program measuring ML-DSA-44 verification cost under SBF"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[features]
+# We provide our own instrumented global allocator.
+custom-heap = []
+default = ["custom-heap"]
+
+[dependencies]
+qshield-mldsa = { path = "../../../crates/qshield-mldsa", features = ["alloc"] }
+solana-program-entrypoint = "3.1.1"
+solana-account-info = "3.1.1"
+solana-program-error = "3.0.1"
+solana-msg = "3.1.0"
+solana-pubkey = "4"
+solana-define-syscall = "4.0.1"
+bytemuck = { version = "1.16", features = ["min_const_generics"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))', 'cfg(feature, values("custom-panic"))'] }

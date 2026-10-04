@@ -1,0 +1,99 @@
+{
+  "generated_by": "benchmarks/ml-dsa-solana/validator",
+  "rpc": "http://127.0.0.1:8899",
+  "cluster_version": "4.3.0",
+  "tx_v1_feature_active": true,
+  "keys": 3,
+  "runs": [
+    {
+      "architecture_b_upload_txs": 4,
+      "architecture_b_upload_latency_ms": 2023,
+      "architecture_b_verify": {
+        "ok": true,
+        "size": 500,
+        "cu": 830361,
+        "fee": 5000,
+        "latency_ms": 504,
+        "err": null
+      },
+      "architecture_b_total_latency_ms": 2529,
+      "architecture_b_total_fees_lamports": 30000,
+      "architecture_a_verify_v1": {
+        "ok": true,
+        "size": 2874,
+        "cu": 829899,
+        "fee": 5000,
+        "latency_ms": 504,
+        "err": null
+      },
+      "negative_modified_message_v1": {
+        "ok": false,
+        "size": 2874,
+        "cu": null,
+        "fee": 0,
+        "latency_ms": 4,
+        "err": "RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: invalid program argument; 5 log messages:\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q invoke [1]\n  Program log: heap_peak=7304\n  Program log: verify=err:ChallengeMismatch\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q consumed 830273 of 1400000 compute units\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q failed: invalid program argument\n"
+      }
+    },
+    {
+      "architecture_b_upload_txs": 4,
+      "architecture_b_upload_latency_ms": 2020,
+      "architecture_b_verify": {
+        "ok": true,
+        "size": 500,
+        "cu": 828349,
+        "fee": 5000,
+        "latency_ms": 505,
+        "err": null
+      },
+      "architecture_b_total_latency_ms": 2527,
+      "architecture_b_total_fees_lamports": 30000,
+      "architecture_a_verify_v1": {
+        "ok": true,
+        "size": 2874,
+        "cu": 827887,
+        "fee": 5000,
+        "latency_ms": 508,
+        "err": null
+      },
+      "negative_modified_message_v1": {
+        "ok": false,
+        "size": 2874,
+        "cu": null,
+        "fee": 0,
+        "latency_ms": 4,
+        "err": "RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: invalid program argument; 5 log messages:\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q invoke [1]\n  Program log: heap_peak=7304\n  Program log: verify=err:ChallengeMismatch\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q consumed 828261 of 1400000 compute units\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q failed: invalid program argument\n"
+      }
+    },
+    {
+      "architecture_b_upload_txs": 4,
+      "architecture_b_upload_latency_ms": 2019,
+      "architecture_b_verify": {
+        "ok": true,
+        "size": 500,
+        "cu": 826453,
+        "fee": 5000,
+        "latency_ms": 505,
+        "err": null
+      },
+      "architecture_b_total_latency_ms": 2525,
+      "architecture_b_total_fees_lamports": 30000,
+      "architecture_a_verify_v1": {
+        "ok": true,
+        "size": 2874,
+        "cu": 825991,
+        "fee": 5000,
+        "latency_ms": 505,
+        "err": null
+      },
+      "negative_modified_message_v1": {
+        "ok": false,
+        "size": 2874,
+        "cu": null,
+        "fee": 0,
+        "latency_ms": 4,
+        "err": "RPC response error -32002: Transaction simulation failed: Error processing Instruction 0: invalid program argument; 5 log messages:\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q invoke [1]\n  Program log: heap_peak=7304\n  Program log: verify=err:ChallengeMismatch\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q consumed 826365 of 1400000 compute units\n  Program bjAGhJHPhxSQef8qdQDP3cWBAEkv6c6HYbEYuwgyY3Q failed: invalid program argument\n"
+      }
+    }
+  ]
+}

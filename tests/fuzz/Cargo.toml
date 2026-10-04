@@ -1,0 +1,53 @@
+[package]
+name = "qshield-fuzz"
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+# Standalone workspace: requires nightly Rust and cargo-fuzz.
+[workspace]
+
+[dependencies]
+libfuzzer-sys = "0.4"
+qshield-mldsa = { path = "../../crates/qshield-mldsa" }
+qshield-protocol = { path = "../../crates/qshield-protocol" }
+qshield-vault = { path = "../../programs/qshield-vault", features = ["no-entrypoint"] }
+
+[[bin]]
+name = "qsp1_decode"
+path = "fuzz_targets/qsp1_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "instruction_unpack"
+path = "fuzz_targets/instruction_unpack.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "account_state"
+path = "fuzz_targets/account_state.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "mldsa_verify"
+path = "fuzz_targets/mldsa_verify.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "token_parse"
+path = "fuzz_targets/token_parse.rs"
+test = false
+doc = false
+bench = false

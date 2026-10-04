@@ -1,0 +1,51 @@
+# cargo-deny policy (https://embarkstudios.github.io/cargo-deny/). Run: cargo deny check
+[graph]
+all-features = false
+
+[advisories]
+version = 2
+yanked = "deny"
+# Use the git CLI (respects system proxy and CA configuration).
+git-fetch-with-cli = true
+# "Unmaintained" notices (no known vulnerability) for crates that are reached
+# only through test/benchmark tooling (LiteSVM and the Agave SVM crates, and
+# bincode used to measure transaction sizes). None is in the on-chain program's
+# dependency graph (`cargo tree -e normal -p qshield-vault`). Revisit on every
+# LiteSVM/Agave upgrade. Vulnerability advisories are never ignored here.
+ignore = [
+    { id = "RUSTSEC-2021-0139", reason = "ansi_term: unmaintained; litesvm (test only)" },
+    { id = "RUSTSEC-2025-0141", reason = "bincode: unmaintained; tests/benchmarks and Agave SVM (test only)" },
+    { id = "RUSTSEC-2024-0388", reason = "derivative: unmaintained; Agave SVM crates via litesvm (test only)" },
+    { id = "RUSTSEC-2025-0161", reason = "libsecp256k1: unmaintained; Agave secp256k1 syscall via litesvm (test only)" },
+    { id = "RUSTSEC-2024-0436", reason = "paste: unmaintained; arkworks via Agave syscalls in litesvm (test only)" },
+]
+
+[licenses]
+version = 2
+confidence-threshold = 0.9
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "MIT-0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Zlib",
+    "0BSD",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "Unlicense",
+    "ISC",
+    # webpki-roots (Mozilla CA root certificates, data) used by the RPC client.
+    "CDLA-Permissive-2.0",
+]
+
+[bans]
+multiple-versions = "allow"
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

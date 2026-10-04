@@ -1,0 +1,39 @@
+{
+  "name": "@qshield/sdk",
+  "version": "0.4.0",
+  "description": "TypeScript SDK for QShield: QSP-1 authorizations, ML-DSA-44 keys, encrypted keystore, vault accounts and instructions (experimental research preview)",
+  "license": "(Apache-2.0 OR MIT)",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@noble/ciphers": "2.4.0",
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "@noble/post-quantum": "0.7.1",
+    "@scure/base": "2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.3"
+  }
+}

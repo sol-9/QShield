@@ -1,0 +1,36 @@
+[package]
+name = "qshield-relayer"
+description = "Permissionless, untrusted QShield relayer: submits signed QSP-1 authorizations and pays Solana fees"
+version = "0.4.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[[bin]]
+name = "qshield-relayer"
+path = "src/main.rs"
+
+[dependencies]
+qshield-client = { path = "../../crates/qshield-client" }
+tiny_http = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+clap = { version = "4.6", features = ["derive", "env"] }
+anyhow = "1"
+hex = "0.4"
+sha2 = "0.10"
+solana-keypair = "3"
+solana-pubkey = "4"
+solana-signer = "3"
+
+[dev-dependencies]
+litesvm = "0.17"
+qshield-vault = { path = "../../programs/qshield-vault", features = ["no-entrypoint"] }
+solana-hash = "4"
+solana-signature = "3"
+solana-transaction = { version = "4", features = ["wincode"] }
+solana-message = "4"
+solana-clock = "3.2"
+ureq = { version = "3", features = ["json"] }

@@ -1,0 +1,31 @@
+[package]
+name = "mldsa-bench-validator"
+description = "Runs the ML-DSA-44 benchmark program against a real solana-test-validator over RPC"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+# Standalone workspace (see root Cargo.toml `exclude`).
+[workspace]
+
+[dependencies]
+solana-rpc-client = "4.3"
+solana-rpc-client-api = "4.3"
+solana-transaction-status-client-types = "4.3"
+solana-commitment-config = "3"
+solana-system-interface = { version = "3", features = ["bincode"] }
+solana-keypair = "3"
+solana-signer = "3"
+solana-pubkey = "4"
+solana-instruction = "3"
+solana-transaction = { version = "4", features = ["serde"] }
+solana-message = { version = "4", features = ["serde"] }
+solana-compute-budget-interface = { version = "3", features = ["borsh"] }
+mldsa-bench-fixtures = { path = "../fixtures" }
+qshield-mldsa = { path = "../../../crates/qshield-mldsa" }
+rand = "0.8"
+rand_chacha = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1"

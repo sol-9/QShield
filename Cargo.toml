@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+# Separate workspace: its Solana RPC client pins crate versions that conflict with LiteSVM.
+exclude = ["benchmarks/ml-dsa-solana/validator", "tests/fuzz"]
+members = [
+    "crates/qshield-mldsa",
+    "crates/qshield-protocol",
+    "programs/qshield-vault",
+    "crates/qshield-client",
+    "cli",
+    "services/relayer",
+    "benchmarks/ml-dsa-solana/program",
+    "benchmarks/ml-dsa-solana/harness",
+    "benchmarks/ml-dsa-solana/fixtures",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/kresmion/qshield"
+rust-version = "1.85"
+
+[profile.release]
+overflow-checks = true

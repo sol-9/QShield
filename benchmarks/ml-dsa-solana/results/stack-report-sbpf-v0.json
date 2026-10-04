@@ -1,0 +1,21 @@
+{
+  "binary": "target/deploy-v0/mldsa_bench_program.so",
+  "sbpf_version": 0,
+  "functions": 61,
+  "frame_limit_bytes": 4096,
+  "max_frame_offset_bytes": 1504,
+  "top_10_frame_offsets": [
+    1504,
+    1176,
+    1168,
+    1128,
+    1096,
+    264,
+    256,
+    248,
+    152,
+    129
+  ],
+  "functions_over_limit": 0,
+  "abi_argument_spill_stores": 50
+}

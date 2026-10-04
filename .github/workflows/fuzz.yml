@@ -1,0 +1,25 @@
+name: Fuzz
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [qsp1_decode, instruction_unpack, account_state, mldsa_verify, token_parse]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install nightly and cargo-fuzz
+        run: |
+          rustup toolchain install nightly-2026-09-01 --profile minimal
+          cargo +nightly-2026-09-01 install cargo-fuzz --locked --version 0.13.2
+      - name: Fuzz ${{ matrix.target }} (10 minutes)
+        run: cargo +nightly-2026-09-01 fuzz run ${{ matrix.target }} --fuzz-dir tests/fuzz -- -max_total_time=600

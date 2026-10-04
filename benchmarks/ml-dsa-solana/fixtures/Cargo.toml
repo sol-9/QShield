@@ -1,0 +1,13 @@
+[package]
+name = "mldsa-bench-fixtures"
+description = "Deterministic ML-DSA-44 fixtures shared by the benchmark harnesses"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+publish = false
+
+[dependencies]
+fips204 = { version = "=0.4.6", default-features = false, features = ["ml-dsa-44", "default-rng"] }
+qshield-mldsa = { path = "../../../crates/qshield-mldsa" }
+rand = "0.8"
+rand_chacha = "0.3"

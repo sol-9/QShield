@@ -1,0 +1,23 @@
+{
+  "name": "@qshield/web",
+  "version": "0.5.0",
+  "description": "QShield web wallet (experimental research preview): PQ key generation and backup, vault creation, balances, send, receive, key rotation",
+  "license": "(Apache-2.0 OR MIT)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/node": "22.18.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "5.0.3"
+  }
+}

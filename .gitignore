@@ -1,0 +1,15 @@
+target/
+node_modules/
+*.so
+test-ledger/
+.DS_Store
+tests/fuzz/corpus/
+tests/fuzz/artifacts/
+tests/fuzz/coverage/
+# Deployment secrets and build output (never commit keypairs)
+deploy-keys/
+*-keypair.json
+.env
+.env.*
+site/
+.wrangler/
