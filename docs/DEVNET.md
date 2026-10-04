@@ -21,7 +21,7 @@ can replace this program and take all funds. The program remains upgradeable.
 | Date | Slot | Source | Binary SHA-256 | Notes |
 |---|---|---|---|---|
 | 2026-10-02 | 506667156 | no git metadata | `3b7deebd…ee3ef4d1` (139,672 bytes) | First deploy. Smoke test: create, inline and buffered withdrawals, replay refused, close. |
-| 2026-10-04 | 507386520 | `95416ca` | `da1d8a60…ae26458e` (139,760 bytes) | Upgrade with the review fixes: guardian fees count against the allowance; a frozen vault pays no everyday-key fees. Program data extended by 10,240 bytes (SIMD-0431 minimum). On-chain bytes compared with the build: identical. |
+| 2026-10-04 | 507386520 | `27a5900` | `da1d8a60…ae26458e` (139,760 bytes) | Upgrade with the review fixes: guardian fees count against the allowance; a frozen vault pays no everyday-key fees. Program data extended by 10,240 bytes (SIMD-0431 minimum). On-chain bytes compared with the build: identical. |
 
 ### 2026-10-04 smoke test (live devnet, CLI)
 

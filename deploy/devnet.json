@@ -4,7 +4,7 @@
   "upgrade_authority": "A6JKGNVJ8T8TmLMqkuGeCgVnfGTaori1aoAz8e7KvDug",
   "relayer_fee_payer": "F33apaQghaqrCfbGjgDSwzWjRC9pYN1a2HcnBPGAQb2C",
   "binary_sha256": "da1d8a60124e4c832160327fcdbd6a82efbadc56a2fd8b2123fa5245ae26458e",
-  "source_commit": "95416ca7c3effc361c8b92fbb4c98d7d518d37db",
+  "source_commit": "27a5900736cd83b31a1af2a200c47dab433ba190",
   "agave": "cargo-build-sbf 4.3.0",
   "deployed_at": "2026-10-04T13:55:54Z"
 }
