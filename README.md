@@ -1,5 +1,7 @@
 # QShield
 
+**[Devnet beta](https://qshield.hield-main.workers.dev)** · **[X: @QsheildSolana](https://x.com/QsheildSolana)**
+
 QShield is an experimental open-source post-quantum authorization layer for
 Solana accounts.
 
