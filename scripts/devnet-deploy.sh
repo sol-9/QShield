@@ -75,8 +75,11 @@ fi
 SIZE="$(stat -c %s "$SO")"
 CURRENT="$(solana program show -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" 2>/dev/null | awk '/Data Length/ {print $3}' || true)"
 if [ -n "$CURRENT" ] && [ "$SIZE" -gt "$CURRENT" ]; then
-  echo "== extend program data by $(( SIZE - CURRENT )) bytes"
-  solana program extend -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" "$(( SIZE - CURRENT ))"
+  # SIMD-0431: extensions must add at least 10 KiB.
+  GROW=$(( SIZE - CURRENT ))
+  [ "$GROW" -ge 10240 ] || GROW=10240
+  echo "== extend program data by $GROW bytes"
+  solana program extend -u "$URL" --keypair "$AUTH_KEY" "$PROGRAM" "$GROW"
 fi
 
 echo "== deploy"
