@@ -71,7 +71,11 @@ other accounts keep their existing cryptography.
   24-word recovery phrases, look-alike-address warnings and a guardian
   approval page for a phone.
 
-Not yet: security hardening phase, devnet deployment.
+* **Devnet beta tooling**: `scripts/devnet-deploy.sh`, a Fly.io relayer
+  (`fly.toml`), and a Cloudflare Pages site with a landing page and the
+  wallet (`scripts/build-site.sh`). See [deployment](docs/DEPLOYMENT.md) §6.
+
+Not yet: external audit, upgrade-authority multisig, mainnet.
 See [limitations](docs/LIMITATIONS.md).
 
 ## How it works

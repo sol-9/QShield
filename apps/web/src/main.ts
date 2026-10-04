@@ -958,8 +958,9 @@ function walletButtons() {
     'div',
     { class: 'stack' },
     ...ws.map((w, i) => button(`connect-wallet-${i}`, `Connect ${w.name}`, () => run('Connect wallet', async () => void (payer = await connectWallet(w, state.settings.cluster))), false, 'primary', 'wallet')),
-    ws.length === 0 && h('p', { class: 'muted' }, 'No Solana wallet extension found in this browser.'),
-    state.settings.cluster !== 'mainnet' &&
+    ws.length === 0 && h('p', { class: 'muted' }, state.settings.cluster === 'localnet' ? 'No Solana wallet extension found in this browser.' : 'No Solana wallet found. Install Phantom or Solflare, then reload this page.'),
+    state.settings.cluster !== 'localnet' && state.settings.cluster !== 'mainnet' && devnetHelp(),
+    state.settings.cluster === 'localnet' &&
       button(
         'dev-payer',
         'Use a test wallet (airdropped SOL)',
@@ -1004,6 +1005,24 @@ function recoveryWordsBlock(k: StoredKey) {
     h('p', { class: 'muted small' }, 'Your vault key as 24 words on paper. They restore the key on any computer, with no file needed.'),
     field('Vault key password', input('words-password', { type: 'password', autocomplete: 'off' })),
     button('show-words', 'Show recovery words', () => run('Showing words', () => showRecoveryWords(k)), false, 'secondary'),
+  );
+}
+
+/** Test networks: how to get a wallet on the right network and free test SOL. */
+function devnetHelp() {
+  const c = state.settings.cluster;
+  return h(
+    'details',
+    { class: 'fields', 'data-testid': 'devnet-help' },
+    h('summary', {}, `New to ${c}? Get free test SOL`),
+    h(
+      'ol',
+      { class: 'steps compact' },
+      h('li', {}, `In Phantom or Solflare, switch the network to ${c[0]!.toUpperCase() + c.slice(1)} (Settings → Developer settings).`),
+      h('li', {}, 'Copy your wallet address, then get free test SOL at ', h('a', { href: 'https://faucet.solana.com', target: '_blank', rel: 'noopener noreferrer' }, 'faucet.solana.com'), '.'),
+      h('li', {}, 'Come back and connect. Creating a vault uses about 0.16 test SOL.'),
+    ),
+    h('p', { class: 'muted small' }, 'Test SOL has no value. Never send real SOL to a devnet address.'),
   );
 }
 
@@ -1175,7 +1194,7 @@ function welcomeView() {
         'ghost',
       ),
     ),
-    h('p', { class: 'fineprint' }, 'Research preview, unaudited. Do not store meaningful funds. QShield protects what is in its vaults; it does not make Solana itself quantum-resistant.'),
+    h('p', { class: 'fineprint' }, state.settings.cluster === 'mainnet' ? 'Do not store meaningful funds. ' : `Public beta on ${state.settings.cluster}: free test SOL only, never real money. `, 'Research preview, unaudited. QShield protects what is in its vaults; it does not make Solana itself quantum-resistant.'),
   );
 }
 

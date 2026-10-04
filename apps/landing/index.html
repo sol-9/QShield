@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#0d1015" />
+    <title>QShield: a Solana vault with a post-quantum key</title>
+    <meta name="description" content="QShield keeps SOL and tokens in a Solana vault that only an ML-DSA signature can move. Add a guardian and a stolen key can take at most your daily limit. Public beta on devnet." />
+    <meta property="og:title" content="QShield: a Solana vault with a post-quantum key" />
+    <meta property="og:description" content="Only an ML-DSA signature can move your funds. A guardian caps what a stolen key can take. Try the devnet beta." />
+    <link rel="stylesheet" href="landing.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="wordmark" href="./" aria-label="QShield home">
+        <svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.4 8.2-8 9-4.6-.8-8-4-8-9V6z" /><path d="M9 12l2 2 4-4" /></svg>
+        QShield
+      </a>
+      <nav aria-label="Site">
+        <a href="#how">How it works</a>
+        <a href="#guardian">Guardian</a>
+        <a href="#beta">Try the beta</a>
+        <a class="nav-cta" href="app/">Open app</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-text">
+          <p class="status"><span class="dot"></span>Public beta on {{CLUSTER}}</p>
+          <h1>A Solana vault locked with a post-quantum key.</h1>
+          <p class="lead">QShield keeps your SOL and tokens in a vault that only an ML-DSA signature can move. That is the NIST standard built to hold up against quantum computers. Add a guardian, and even a stolen key can only take your daily limit.</p>
+          <div class="ctas">
+            <a class="btn btn-primary" href="app/">Open the devnet beta</a>
+            <a class="btn btn-secondary" href="#how">How it works</a>
+          </div>
+          <p class="fine">Free test SOL only. Unaudited research preview.</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="phone">
+            <div class="ph-head"><span class="ph-avatar"></span><span><b>My vault</b><i>9Mpd…5A4W</i></span><span class="ph-chip">devnet</span></div>
+            <div class="ph-hero">
+              <span class="ph-label">Available to send</span>
+              <span class="ph-balance">1.25<small>SOL</small></span>
+              <span class="ph-pills"><em class="ok">Active</em><em class="guard">0.80 SOL instant today</em></span>
+            </div>
+            <div class="ph-actions"><span>Send</span><span>Receive</span><span>Deposit</span><span>Protect</span></div>
+            <div class="ph-card">
+              <b>Approve send 7?</b>
+              <span>4.00 SOL to Dest…9xQ2</span>
+              <span class="ph-code">orbit-maple-sugar-wave</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scope" aria-labelledby="scope-title">
+        <h2 id="scope-title">What it protects, and what it doesn't</h2>
+        <div class="two">
+          <div class="box box-yes">
+            <h3>Protected</h3>
+            <p>Assets you deposit into your QShield vault. Every withdrawal, key change and freeze needs a signature from your ML-DSA-44 key.</p>
+          </div>
+          <div class="box">
+            <h3>Unchanged</h3>
+            <p>Solana itself, its consensus, and every account outside your vault. QShield does not make the blockchain quantum-resistant. It adds a stronger lock to one safe.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" aria-labelledby="how-title">
+        <h2 id="how-title">How a send works</h2>
+        <ol class="flow">
+          <li>
+            <h3>You sign</h3>
+            <p>Your browser builds a short note: amount, recipient, this vault, this network, a one-time number and an expiry. Your post-quantum key signs it. The key never leaves your device.</p>
+          </li>
+          <li>
+            <h3>A relayer delivers</h3>
+            <p>It pays the network fee and submits your note. It holds no key of yours and cannot change a single byte: any edit breaks the signature.</p>
+          </li>
+          <li>
+            <h3>The program checks</h3>
+            <p>On chain, QShield verifies the ML-DSA signature in about 828k compute units, inside one transaction. Then it checks network, vault, expiry and the one-time number, and only then moves the funds.</p>
+          </li>
+        </ol>
+        <p class="note">Your normal Solana wallet only pays for setup and deposits. It can never withdraw. Stealing it gets an attacker nothing from the vault.</p>
+      </section>
+
+      <section id="guardian" class="guardian" aria-labelledby="guardian-title">
+        <div>
+          <h2 id="guardian-title">A guardian caps what a thief can take</h2>
+          <p class="lead">A guardian is a second key, kept as 24 words on paper or on your phone. Everyday sends stay instant. Everything else waits for a tap.</p>
+        </div>
+        <ul class="rules">
+          <li><b>Instant</b><span>Sends within your daily limit, and to addresses you saved.</span></li>
+          <li><b>Needs your guardian</b><span>Bigger sends and new addresses. Your phone shows the real amount, recipient and four match words.</span></li>
+          <li><b>Guardian only</b><span>Unfreezing, raising the limit, saving addresses, replacing a lost or stolen key.</span></li>
+        </ul>
+        <p class="note">If malware steals your everyday key, it can take at most your limit. Freeze in one tap, and your guardian swaps the key from a clean device.</p>
+      </section>
+
+      <section class="recovery" aria-labelledby="recovery-title">
+        <h2 id="recovery-title">Lose your computer, keep your vault</h2>
+        <div class="three">
+          <div class="box"><h3>Key file</h3><p>An encrypted backup that the app makes you test before you continue.</p></div>
+          <div class="box"><h3>24 recovery words</h3><p>Your key on paper. Restores it on any computer, no file needed.</p></div>
+          <div class="box"><h3>Guardian</h3><p>Lost both? Your guardian switches the vault to a new key, and the old one stops working.</p></div>
+        </div>
+        <p class="note">Nobody else holds a copy of your key. That keeps the vault safe, and it is why the app insists on a backup.</p>
+      </section>
+
+      <section id="beta" class="beta" aria-labelledby="beta-title">
+        <h2 id="beta-title">Try the beta in five minutes</h2>
+        <ol class="steps">
+          <li><span>Install <a href="https://phantom.com" rel="noopener noreferrer">Phantom</a> or <a href="https://solflare.com" rel="noopener noreferrer">Solflare</a> and switch it to <b>Devnet</b> (Settings, then Developer settings).</span></li>
+          <li><span>Get free test SOL for that wallet at <a href="https://faucet.solana.com" rel="noopener noreferrer">faucet.solana.com</a>.</span></li>
+          <li><span>Open the app, create your vault key and back it up.</span></li>
+          <li><span>Connect your wallet and create a vault. It uses about 0.16 test SOL.</span></li>
+          <li><span>Deposit, send, then try adding a guardian on your phone.</span></li>
+        </ol>
+        <a class="btn btn-primary" href="app/">Open the devnet beta</a>
+      </section>
+
+      <section class="status-box" aria-labelledby="status-title">
+        <h2 id="status-title">Where QShield stands</h2>
+        <ul class="facts">
+          <li><span>Stage</span><b>Research preview, unaudited. Devnet only.</b></li>
+          <li><span>Program</span><b class="mono">{{PROGRAM_ID}}</b></li>
+          <li><span>Upgrade authority</span><b class="mono">{{UPGRADE_AUTHORITY}}</b></li>
+          <li><span>Signature</span><b>ML-DSA-44 (FIPS 204), verified on chain</b></li>
+          <li><span>License</span><b>Apache-2.0 or MIT</b></li>
+        </ul>
+        <p class="note">The program can still be upgraded. Whoever holds the upgrade authority above can replace it and take all funds in it, which is fine for test SOL and why there is no mainnet yet. The path to mainnet is an external audit, a multisig with a public timelock, then an immutable program.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span>QShield</span>
+      <a href="{{REPO_URL}}">Source code and docs</a>
+      <a href="app/">Open app</a>
+    </footer>
+  </body>
+</html>

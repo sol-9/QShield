@@ -16,10 +16,17 @@
 * **CloseVault does not sweep tokens.** Withdraw all tokens first (the CLI
   enforces this). Vault token-account rent (≈ 0.002 SOL each) is not
   recoverable in this version.
+* **Relayer rent rule.** A relayer refuses token sends that would make it
+  create the recipient's token account unless the signed fee covers that rent,
+  and refuses proposals that never expire (`docs/RELAYER.md`). It does not
+  close expired proposals itself yet.
 * **Relayer fees are SOL.** A token withdrawal's relayer fee is paid in SOL
   from the vault; a vault with no spare SOL can still withdraw tokens with
   `fee_lamports = 0` if someone pays the transaction fee.
-* **No recovery.** Losing the ML-DSA key loses the vault (`docs/RECOVERY_MODEL.md`).
+* **Recovery needs a backup or a guardian.** The key file (with its password),
+  the 24 recovery words, or a guardian that switches the vault to a new key.
+  Without any of them, losing the ML-DSA key loses the vault
+  (`docs/RECOVERY_MODEL.md`).
 * **Guardian policy is opt-in** (ADR-0018). Without it a vault is single-key:
   whoever holds the key (or gets one signature from it) can drain it. With it,
   the everyday key is bounded by its limit and saved addresses; a stolen
@@ -31,8 +38,10 @@
   history in memory only and rate-limits per IP (best effort). The web wallet
   stores the encrypted key in browser storage: a compromised browser or
   extension can capture it while it is unlocked; it supports one vault per
-  key file and SOL/token send and receive, but not pause/unpause/close
-  (use the CLI). Key storage is
+  key, SOL/token send and receive, freeze/unfreeze, key replacement, guardian
+  flows and recovery, but not CloseVault (use the CLI). Activity shows the
+  current session only, and tokens are shown by mint address (no metadata).
+  Key storage is
   password-encrypted software storage (`docs/KEYSTORE.md`), not hardware.
 * **TypeScript SDK sends through a relayer.** It produces instructions and
   submission plans, and `RelayerClient` submits signed envelopes to a relayer;
@@ -64,9 +73,8 @@
 * **CPI.** Other programs can invoke `Execute` (the PQ signature still governs);
   there is no CPI-friendly "smart account" interface yet.
 * **Cluster binding at build time.** Each binary serves exactly one cluster.
-* **Genesis hashes** in `crates/qshield-protocol` were not checked against live
-  RPC endpoints from the development environment; verify before any public
-  deployment.
+* **Genesis hashes** in `crates/qshield-protocol` match `solana genesis-hash`
+  for mainnet-beta, devnet and testnet (checked 2026-10-04).
 
 ## Token-2022
 

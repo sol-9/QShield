@@ -75,7 +75,7 @@ program and take all funds."*
 - [ ] Upgrade model decided and implemented (§3)
 - [ ] Incident-response procedure written (contacts, pause semantics, communication)
 - [ ] `enable_tx_v1` and SBPF v3 status verified on mainnet (otherwise legacy path only)
-- [ ] Cluster genesis hashes verified with `solana genesis-hash`
+- [x] Cluster genesis hashes verified with `solana genesis-hash` (2026-10-04)
 
 ## 5. Reproducible / verified builds
 
@@ -97,7 +97,27 @@ Plan: adopt a container-pinned build (e.g. `solana-verify`) so that builds are
 bit-for-bit reproducible across machines; until then, hashes are only
 reproducible with identical toolchain versions. Tracked as an issue.
 
-## 6. Local end-to-end run
+## 6. Devnet beta
+
+Devnet runs Agave 4.4 with SBPF v3 programs and SIMD-0385 transaction v1
+active (checked 2026-10-04), so sends are single-transaction there too.
+
+| Piece | Where | How |
+|---|---|---|
+| Program | devnet | `scripts/devnet-deploy.sh` (build with `cluster-devnet`, deploy or upgrade, fund the relayer, write `deploy/devnet.json`) |
+| Relayer | Fly.io, one machine | `fly.toml` + `deploy/relayer/Dockerfile`; fee-payer key via `fly secrets set QSHIELD_RELAYER_KEYPAIR_JSON=…` |
+| Wallet + landing | Cloudflare Pages | `RELAYER_URL=… scripts/build-site.sh` → `site/` (wallet at `/app/` with pinned settings, landing at `/`, `_headers` with CSP and framing rules); `npx wrangler pages deploy site --project-name qshield` |
+
+Keys live in `deploy-keys/devnet/` (git-ignored): `authority.json` is the
+upgrade authority and pays for deploys; `program.json` fixes the program id;
+`relayer.json` is the relayer's fee payer. Back them up offline. The landing
+page states the upgrade authority, as §3 requires.
+
+Operating notes: keep the relayer's balance topped up (watch `/health`),
+run exactly one relayer machine (request state is in memory), and remember
+that every deploy is an upgrade anyone holding `authority.json` can make.
+
+## 7. Local end-to-end run
 
 ```bash
 scripts/bench-validator.sh   # starts a test validator if needed, deploys, runs the RPC harness

@@ -1,0 +1,10 @@
+target/
+**/node_modules/
+**/dist/
+**/test-results/
+deploy-keys/
+site/
+.git/
+tests/fuzz/
+benchmarks/ml-dsa-solana/validator/target/
+*.so

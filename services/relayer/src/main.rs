@@ -8,7 +8,7 @@ use qshield_client::protocol::{cluster, Bytes32};
 use qshield_client::rpc::JsonRpc;
 use qshield_client::QShieldClient;
 use qshield_relayer::{Policy, Relayer};
-use solana_keypair::read_keypair_file;
+use solana_keypair::{read_keypair_file, Keypair};
 use solana_pubkey::Pubkey;
 use solana_signer::Signer;
 
@@ -48,8 +48,10 @@ struct Args {
     #[arg(long, env = "QSHIELD_CLUSTER", value_enum, default_value_t = ClusterArg::Localnet)]
     cluster: ClusterArg,
     /// Fee-payer keypair file (the relayer's only key; keep little SOL in it).
+    /// Without it, the keypair is read as a JSON byte array from the
+    /// environment variable QSHIELD_RELAYER_KEYPAIR_JSON (for hosted secrets).
     #[arg(long, env = "QSHIELD_RELAYER_KEYPAIR")]
-    keypair: PathBuf,
+    keypair: Option<PathBuf>,
     /// Minimum signed fee per authorization, in lamports (0 = sponsor all fees).
     #[arg(long, env = "QSHIELD_RELAYER_MIN_FEE", default_value_t = 0)]
     min_fee_lamports: u64,
@@ -77,8 +79,18 @@ struct Args {
 
 fn main() -> Result<()> {
     let a = Args::parse();
-    let fee_payer = read_keypair_file(&a.keypair)
-        .map_err(|e| anyhow!("reading keypair {}: {e}", a.keypair.display()))?;
+    let fee_payer = match &a.keypair {
+        Some(path) => read_keypair_file(path)
+            .map_err(|e| anyhow!("reading keypair {}: {e}", path.display()))?,
+        None => {
+            let json = std::env::var("QSHIELD_RELAYER_KEYPAIR_JSON").map_err(|_| {
+                anyhow!("set --keypair (QSHIELD_RELAYER_KEYPAIR) or QSHIELD_RELAYER_KEYPAIR_JSON")
+            })?;
+            let bytes: Vec<u8> = serde_json::from_str(&json).map_err(|_| anyhow!("QSHIELD_RELAYER_KEYPAIR_JSON must be a JSON byte array, as written by solana-keygen"))?;
+            Keypair::try_from(bytes.as_slice())
+                .map_err(|e| anyhow!("QSHIELD_RELAYER_KEYPAIR_JSON: {e}"))?
+        }
+    };
     let client = QShieldClient::new(JsonRpc::new(a.url.clone()), a.program_id, a.cluster.id());
     client.check_cluster()?;
     let policy = Policy {
